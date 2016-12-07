@@ -1,0 +1,28 @@
+{
+  "name": "rotating-proxy-manager",
+  "version": "1.0.0",
+  "description": "Rotating Proxy Manager module for Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/waylaidwanderer/node-rotating-proxy-manager.git"
+  },
+  "keywords": [
+    "rotating",
+    "proxy",
+    "manager",
+    "proxies"
+  ],
+  "author": "waylaidwanderer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/waylaidwanderer/node-rotating-proxy-manager/issues"
+  },
+  "homepage": "https://github.com/waylaidwanderer/node-rotating-proxy-manager#readme",
+  "dependencies": {
+    "sqlite3": "^3.1.8"
+  }
+}
