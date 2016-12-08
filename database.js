@@ -15,7 +15,7 @@ class Database {
         let db = new sqlite3.cached.Database(dbFileName);
         db.serialize();
         this.db = db;
-        if (newInstance) {
+        if (newInstance || !fileExists) {
             db.run(`CREATE TABLE \`proxies\` (
                      \`id\` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                      \`proxy\` text NOT NULL,
