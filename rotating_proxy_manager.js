@@ -80,6 +80,10 @@ class RotatingProxyManager extends EventEmitter {
         });
     }
 
+    blockProxy(proxy, blockUntil, callback) {
+        this.database.blockProxy(proxy, blockUntil, callback);
+    }
+
     getProxies(callback) {
         let proxies = [];
         this.database.getProxies((err, dbProxies) => {

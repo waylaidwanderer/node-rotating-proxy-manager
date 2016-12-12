@@ -22,9 +22,11 @@ class Database {
                      \`min_wait\` INTEGER NOT NULL DEFAULT \'0\',
                      \`max_wait\` INTEGER NOT NULL DEFAULT \'0\',
                      \`num_uses\` INTEGER NOT NULL DEFAULT \'0\',
+                     \`block_until\` INTEGER NOT NULL DEFAULT \'0\',
                      \`created_at\` INTEGER NOT NULL DEFAULT \'0\',
                      \`updated_at\` INTEGER NOT NULL DEFAULT \'0\'
                   )`);
+            // TODO: block_until
         }
     }
 
@@ -52,7 +54,8 @@ class Database {
     }
 
     nextProxy(callback) {
-        this.db.get('SELECT * FROM proxies ORDER BY updated_at ASC, num_uses ASC LIMIT 1;', (err, row) => {
+        const timestamp = Date.now();
+        this.db.get(`SELECT * FROM proxies WHERE block_until < ${timestamp} ORDER BY updated_at ASC, num_uses ASC LIMIT 1;`, (err, row) => {
             if (err) {
                 callback(err);
                 return;
@@ -76,6 +79,14 @@ class Database {
     incrementProxy(id, callback) {
         let timestamp = Date.now();
         this.db.run(`UPDATE proxies SET updated_at = ${timestamp}, num_uses = num_uses + 1 WHERE id = ${id};`, (err) => {
+            if (err) throw err;
+            callback();
+        });
+    }
+
+    blockProxy(proxy, blockUntil, callback) {
+        const timestamp = Date.now();
+        this.db.run(`UPDATE proxies SET updated_at = ${timestamp}, block_until = ${blockUntil} WHERE proxy = "${proxy}";`, (err) => {
             if (err) throw err;
             callback();
         });
