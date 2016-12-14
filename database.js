@@ -1,11 +1,9 @@
 "use strict";
-const EventEmitter = require('events');
 const fs = require('fs');
 const sqlite3 = require('sqlite3');
 
-class Database extends EventEmitter {
-    constructor(dbFileName, newInstance) {
-        super();
+class Database {
+    constructor(dbFileName, newInstance, cb) {
         let fileExists = false;
         try {
             fs.accessSync(dbFileName, fs.F_OK);
@@ -29,11 +27,11 @@ class Database extends EventEmitter {
                      \`updated_at\` INTEGER NOT NULL DEFAULT \'0\'
                   )`, (err) => {
                 if (err) throw err;
-                this.emit('ready');
+                cb(this);
             });
             // TODO: block_until
         } else {
-            this.emit('ready');
+            cb(this);
         }
     }
 

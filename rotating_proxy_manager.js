@@ -7,12 +7,11 @@ class RotatingProxyManager extends EventEmitter {
         super();
         this.nextProxyReturned = true;
         this.proxyArr = proxyArr;
-        this.database = new Database(dbPath+'/sqlite.db', newInstance);
-        this.database.on('ready', () => {
+        this.database = new Database(dbPath+'/sqlite.db', newInstance, database => {
             let addProxyPromises = [];
             for (let i = 0; i < proxyArr.length; i++) {
                 let proxy = proxyArr[i];
-                addProxyPromises.push(this.database.addProxy(proxy.toString(), proxy.waitMin, proxy.waitMax));
+                addProxyPromises.push(database.addProxy(proxy.toString(), proxy.waitMin, proxy.waitMax));
             }
             Promise.all(addProxyPromises).then(() => {
                 this.emit('ready');
