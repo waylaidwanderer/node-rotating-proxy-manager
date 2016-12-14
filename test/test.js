@@ -63,7 +63,6 @@ describe('RotatingProxyManager', function() {
             });
         });
         it('should return correct proxy across multiple RotatingProxyManagers', function(done) {
-            //this.timeout(10000);
             createProxyManager(self.proxies, true).then(proxyManager => {
                 self.proxyManager = proxyManager;
                 return nextProxy(self.proxyManager);
@@ -92,6 +91,34 @@ describe('RotatingProxyManager', function() {
                 done(err);
             });
         });
+        it('should not return the first proxy after blocking it', function(done) {
+            createProxyManager(self.proxies, true).then(proxyManager => {
+                self.proxyManager = proxyManager;
+                blockProxy(self.proxyManager, '127.0.0.1:80', Date.now() + 1000).then(() => {
+                    return nextProxy(self.proxyManager);
+                }).then(proxy => {
+                    assert.equal(proxy.toString(), '127.0.0.2:80');
+                    done();
+                }).catch(err => {
+                    done(err);
+                });
+            });
+        });
+        it('should return blocked proxy when Date.now() > blockUntil time', function(done) {
+            createProxyManager(self.proxies, true).then(proxyManager => {
+                self.proxyManager = proxyManager;
+                blockProxy(self.proxyManager, '127.0.0.1:80', Date.now() + 1000).then(() => {
+                    return new Promise(resolve => setTimeout(resolve, 1100));
+                }).then(() => {
+                    return nextProxy(self.proxyManager);
+                }).then(proxy => {
+                    assert.equal(proxy.toString(), '127.0.0.1:80');
+                    done();
+                }).catch(err => {
+                    done(err);
+                });
+            });
+        });
     });
 });
 
@@ -118,6 +145,15 @@ function nextProxy(proxyManager) {
         proxyManager.nextProxy((err, proxy) => {
             if (err) return reject(err);
             resolve(proxy);
+        });
+    });
+}
+
+function blockProxy(proxyManager, proxy, blockUntil) {
+    return new Promise((resolve, reject) => {
+        proxyManager.blockProxy(proxy, blockUntil, err => {
+            if (err) return reject(err);
+            resolve();
         });
     });
 }

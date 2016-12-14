@@ -93,8 +93,7 @@ class Database {
     }
 
     blockProxy(proxy, blockUntil, callback) {
-        const timestamp = Date.now();
-        this.db.run(`UPDATE proxies SET updated_at = ${timestamp}, block_until = ${blockUntil} WHERE proxy = "${proxy}";`, (err) => {
+        this.db.run(`UPDATE proxies SET block_until = ${blockUntil} WHERE proxy = "${proxy}";`, (err) => {
             if (err) throw err;
             callback();
         });
