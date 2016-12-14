@@ -12,7 +12,7 @@ class Database {
         if (newInstance && fileExists) {
             fs.unlinkSync(dbFileName);
         }
-        let db = new sqlite3.cached.Database(dbFileName);
+        let db = new sqlite3.Database(dbFileName);
         db.serialize();
         this.db = db;
         if (newInstance || !fileExists) {
