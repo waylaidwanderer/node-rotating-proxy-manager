@@ -1,9 +1,11 @@
 "use strict";
+const EventEmitter = require('events');
 const fs = require('fs');
 const sqlite3 = require('sqlite3');
 
-class Database {
+class Database extends EventEmitter {
     constructor(dbFileName, newInstance) {
+        super();
         let fileExists = false;
         try {
             fs.accessSync(dbFileName, fs.F_OK);
@@ -25,8 +27,13 @@ class Database {
                      \`block_until\` INTEGER NOT NULL DEFAULT \'0\',
                      \`created_at\` INTEGER NOT NULL DEFAULT \'0\',
                      \`updated_at\` INTEGER NOT NULL DEFAULT \'0\'
-                  )`);
+                  )`, (err) => {
+                if (err) throw err;
+                this.emit('ready');
+            });
             // TODO: block_until
+        } else {
+            this.emit('ready');
         }
     }
 
@@ -59,6 +66,9 @@ class Database {
             if (err) {
                 callback(err);
                 return;
+            }
+            if (!row) {
+                return callback('No more proxies to use.');
             }
             this.incrementProxy(row.id, () => {
                 callback(null, row);
